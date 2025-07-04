@@ -32,8 +32,19 @@ From GitHub:
 - Select `Download ZIP`
 - Unzip it on your computer
 
-## TAP runs on Python 3.8+
-Check with:
 
+Run TAP to Create a Baseline Hash
+
+Create a test folder and add some files:
+```bash
+mkdir test-files
+echo "Hello Princess" > test-files/file1.txt
+echo "Security is power" > test-files/file2.txt
+```
+TAP runs on Python 3.8+
+Check with:
 ```bash
 python --version
+```
+This tool is part of the ShieldStack Africa Security Toolkit
+Built with love by Princess Ayeni, T.
