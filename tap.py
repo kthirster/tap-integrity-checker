@@ -79,6 +79,12 @@ def compare_hashes(old, new):
         print("✅ No changes detected.")
 
 if __name__ == "__main__":
+        print("\n" + "═" * 60)
+    print("      TAP - FILE INTEGRITY CHECKER v1.0")
+    print("      Developed by Princess Ayeni, T.")
+    print("      Powered by ShieldStack Africa")
+    print("═" * 60 + "\n")
+
     parser = argparse.ArgumentParser(
         description="TAP - File Integrity Checker v1.0 | ShieldStack Africa | Developed by Princess Ayeni, T."
     )
