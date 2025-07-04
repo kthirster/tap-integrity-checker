@@ -24,8 +24,16 @@ It helps detect unauthorized changes by monitoring the hash values of files in a
 ---
 
 ## 💻 How to Use
+###  Download the Tool
 
-### 1. Create a baseline hash report:
+From GitHub:
+
+- Click the green `Code` button
+- Select `Download ZIP`
+- Unzip it on your computer
+
+## TAP runs on Python 3.8+
+Check with:
 
 ```bash
-python tap.py --scan /your/folder --output baseline.txt
+python --version
