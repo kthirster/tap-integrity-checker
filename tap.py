@@ -67,7 +67,7 @@ def show_menu():
 if __name__ == "__main__":
     ascii_banner = pyfiglet.figlet_format("TAP v1.0")
     print(colored(ascii_banner, color="magenta"))
-    print(colored("Built by Princess Ayeni, T. | ShieldStack Africa\n", color="magenta"))
+    print(colored("File Integrity Checker by Princess Ayeni, T. | ShieldStack Africa\n", color="magenta"))
 
     while True:
         show_menu()
