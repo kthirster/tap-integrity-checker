@@ -79,7 +79,7 @@ def compare_hashes(old, new):
         print("✅ No changes detected.")
 
 if __name__ == "__main__":
-     parser = argparse.ArgumentParser(
+    parser = argparse.ArgumentParser(
         description="TAP - File Integrity Checker v1.0 | ShieldStack Africa | Developed by Princess Ayeni, T."
     )
     parser.add_argument('--scan', help='Directory to scan')
