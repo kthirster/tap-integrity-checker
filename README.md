@@ -33,18 +33,59 @@ From GitHub:
 - Unzip it on your computer
 
 
-Run TAP to Create a Baseline Hash
+Open Terminal or Command Prompt
 
-Create a test folder and add some files:
+Use cd to navigate to the extracted folder:
 ```bash
-mkdir test-files
-echo "Hello Princess" > test-files/file1.txt
-echo "Security is power" > test-files/file2.txt
+cd path/to/tap-integrity-checker
 ```
 TAP runs on Python 3.8+
 Check with:
 ```bash
 python --version
 ```
+Run the Tool 
+
+```bash
+python tap.py
+```
+Create Files & Use the Tool
+
+```bash
+mkdir test-files
+
+   ```
+ Add some files:
+
+```bash
+echo "Hello Princess" > test-files/file1.txt
+echo "Security is power" > test-files/file2.txt
+```
+  Create a baseline:
+
+```bash
+python tap.py --scan test-files --output baseline.txt
+
+```
+
+Modify or delete a file:
+
+
+```bash
+echo "Tampered data" > test-files/file1.txt
+rm test-files/file2.txt
+
+```
+  Compare:
+
+
+```bash
+python tap.py --scan test-files --compare baseline.txt
+
+```
+
+
+
+
 This tool is part of the ShieldStack Africa Security Toolkit
 Built with love by Princess Ayeni, T.
