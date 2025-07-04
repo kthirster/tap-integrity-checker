@@ -1,101 +1,90 @@
-# tap.py
-__version__ = "1.0"
-__author__ = "Princess Ayeni, T. (ShieldStack Africa)"
-
 import os
 import hashlib
 import argparse
+import pyfiglet
 
-def hash_file(filepath):
-    """Generate SHA256 hash for a given file."""
+def calculate_file_hash(filepath):
+    """Calculate SHA256 hash of a file"""
     sha256 = hashlib.sha256()
-    try:
-        with open(filepath, 'rb') as f:
-            while chunk := f.read(4096):
-                sha256.update(chunk)
-        return sha256.hexdigest()
-    except Exception as e:
-        return f"ERROR: {e}"
+    with open(filepath, 'rb') as f:
+        while chunk := f.read(8192):
+            sha256.update(chunk)
+    return sha256.hexdigest()
 
-def scan_directory(path):
-    """Scan directory and return dictionary of file paths and hashes."""
+def scan_directory(directory):
+    """Scan all files in a directory recursively and return dict of hashes"""
     file_hashes = {}
-    for root, _, files in os.walk(path):
-        for file in files:
-            full_path = os.path.join(root, file)
-            file_hashes[full_path] = hash_file(full_path)
+    for root, _, files in os.walk(directory):
+        for filename in files:
+            filepath = os.path.join(root, filename)
+            file_hashes[filepath] = calculate_file_hash(filepath)
     return file_hashes
 
-def save_hash_report(file_hashes, output_path):
-    """Save hashes to a file."""
-    with open(output_path, 'w') as f:
-        for filepath, hash in file_hashes.items():
-            f.write(f"{filepath}|{hash}\n")
-    print(f"[+] Baseline saved to {output_path}")
+def save_hashes(hashes, output_file):
+    """Save file hashes to a file"""
+    with open(output_file, 'w') as f:
+        for path, hash in hashes.items():
+            f.write(f"{path}::{hash}\n")
 
-def load_hash_report(baseline_path):
-    """Load a saved hash report file."""
-    baseline_hashes = {}
-    with open(baseline_path, 'r') as f:
+def load_hashes(file_path):
+    """Load file hashes from a previously saved file"""
+    hashes = {}
+    with open(file_path, 'r') as f:
         for line in f:
-            if '|' in line:
-                filepath, hash = line.strip().split('|')
-                baseline_hashes[filepath] = hash
-    return baseline_hashes
+            if "::" in line:
+                path, hash = line.strip().split("::")
+                hashes[path] = hash
+    return hashes
 
 def compare_hashes(old, new):
-    """Compare old vs new hashes and detect changes."""
     print("\n[+] Comparing file hashes for integrity...\n")
 
-    old_files = set(old.keys())
-    new_files = set(new.keys())
+    old_paths = set(old.keys())
+    new_paths = set(new.keys())
 
-    added = new_files - old_files
-    deleted = old_files - new_files
-    common = old_files & new_files
-
-    changed = []
-
-    for file in common:
-        if old[file] != new[file]:
-            changed.append(file)
-
-    if added:
-        print("🟢 Added files:")
-        for f in added:
-            print(f"  + {f}")
-
-    if deleted:
-        print("🔴 Deleted files:")
-        for f in deleted:
-            print(f"  - {f}")
+    added = new_paths - old_paths
+    deleted = old_paths - new_paths
+    changed = {path for path in old_paths & new_paths if old[path] != new[path]}
 
     if changed:
         print("🟡 Changed files:")
-        for f in changed:
-            print(f"  * {f}")
+        for path in changed:
+            print(f"  * {path}")
+    if deleted:
+        print("\n🔴 Deleted files:")
+        for path in deleted:
+            print(f"  - {path}")
+    if added:
+        print("\n🟢 Added files:")
+        for path in added:
+            print(f"  + {path}")
 
-    if not added and not deleted and not changed:
-        print("✅ No changes detected.")
+    if not changed and not deleted and not added:
+        print("✅ No changes detected. All files are intact.")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="TAP - File Integrity Checker v1.0 | ShieldStack Africa | Developed by Princess Ayeni, T."
-    )
-    parser.add_argument('--scan', help='Directory to scan')
-    parser.add_argument('--output', help='Save baseline hash report to file')
-    parser.add_argument('--compare', help='Compare current scan to a saved hash report')
+    # Show banner
+    ascii_banner = pyfiglet.figlet_format("TAP v1.0")
+    print(ascii_banner)
+    print("File Integrity Checker by Princess Ayeni, T. | ShieldStack Africa\n")
+
+    parser = argparse.ArgumentParser(description="TAP - File Integrity Checker")
+    parser.add_argument("--scan", help="Path to scan for files")
+    parser.add_argument("--output", help="Output file to save hash baseline")
+    parser.add_argument("--compare", help="Compare current hashes with this file")
 
     args = parser.parse_args()
 
-    if args.scan and args.output:
-        hashes = scan_directory(args.scan)
-        save_hash_report(hashes, args.output)
+    if args.scan:
+        current_hashes = scan_directory(args.scan)
 
-    elif args.scan and args.compare:
-        baseline = load_hash_report(args.compare)
-        current = scan_directory(args.scan)
-        compare_hashes(baseline, current)
+        if args.output:
+            save_hashes(current_hashes, args.output)
+            print(f"\n✅ Baseline hashes saved to {args.output}")
+
+        if args.compare:
+            baseline_hashes = load_hashes(args.compare)
+            compare_hashes(baseline_hashes, current_hashes)
 
     else:
-        parser.print_help()
+        print("⚠️ Please provide a directory to scan using --scan")
